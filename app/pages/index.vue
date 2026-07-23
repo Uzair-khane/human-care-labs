@@ -5,6 +5,10 @@ useSeoMeta({
 </script>
 
 <template>
+  <div>
+        <div>
+     <CategoryStrip />
+  </div>
   <section class="bg-brand-navy px-6 py-24 text-white">
     <div class="mx-auto max-w-3xl text-center">
       <h1 class="text-4xl font-bold sm:text-5xl">Precision Manufacturing for Peak Performance</h1>
@@ -21,4 +25,6 @@ useSeoMeta({
       </div>
     </div>
   </section>
+  </div>
+
 </template>
