@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+/* Human Care Labs design tokens */
+@theme {
+  --color-brand-navy: #0b1f3a;
+  --color-brand-teal: #14b8a6;
+  --color-brand-bg: #f7f9fb;
+}
+
+body {
+  @apply bg-white text-slate-800 antialiased;
+}
