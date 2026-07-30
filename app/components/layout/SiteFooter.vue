@@ -38,14 +38,14 @@ const quickLinks = [
         <div>
           <NuxtLink to="/" class="inline-block">
             <img 
-              src="~/assets/common/Main-logo.png" 
+              src="~/assets/Common/Main-logo.png" 
               alt="Human Care Laboratories" 
               class="h-10 w-auto" 
             />
           </NuxtLink>
 
           <p class="mt-5 max-w-sm text-xs sm:text-sm leading-relaxed text-slate-500">
-            Human Care Laboratories focuses on providing high-quality healthcare solutions to improve lives. With innovation and reliability, we aim to meet diverse health and wellness needs.
+            Human Care Laboratories focuses on providing high quality healthcare solutions to improve lives. With innovation and reliability, we aim to meet diverse health and wellness needs.
           </p>
 
           <!-- Light Circle Social Icons (Using components directly from icons folder) -->
@@ -67,7 +67,7 @@ const quickLinks = [
               rel="noopener noreferrer"
               class="flex h-8 w-8 items-center justify-center rounded-full bg-[#E2E8F0]/70 text-slate-600 transition-colors hover:bg-slate-300 hover:text-slate-900"
             >
-              <IconInstagram class="!h-3.5 !w-3.5 " />
+              <IconInstagram class="!h-3.5 !w-3.5 fill-current" />
             </a>
 
             <a
