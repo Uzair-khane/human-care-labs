@@ -16,7 +16,6 @@ const serviceLinks = [
   { label: 'Private Label Manufacturing', to: '/services/private-label-manufacturing' },
   { label: 'Supplement Formulations', to: '/services/supplement-formulations' },
   { label: 'Packaging', to: '/services/packaging' },
-  { label: 'Manufacturing', to: '/services/manufacturing' },
   { label: 'For Import', to: '/services/for-import' }
 ]
 
@@ -27,116 +26,129 @@ const quickLinks = [
   { label: 'Privacy Policy', to: '/privacy-policy' },
   { label: 'Health Blog', to: '/blog' }
 ]
-
-const socials = [
-  { icon: IconFacebook, to: 'https://facebook.com', label: 'Facebook' },
-  { icon: IconInstagram, to: 'https://instagram.com', label: 'Instagram' },
-  { icon: IconYoutube, to: 'https://youtube.com', label: 'YouTube' }
-]
-
-const certifications = ['GMP', 'DRAP', 'ISO', 'HALAL', 'FDA', 'WHO']
 </script>
 
 <template>
-  <footer class="border-t border-slate-200 bg-slate-50">
-    <div class="mx-auto max-w-7xl px-6 py-16">
-      <div class="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] lg:gap-8">
-        <!-- Logo + description -->
+  <footer class="bg-[#F8F9FA] text-[#4A5568] border-t border-gray-100 font-sans">
+    <div class="mx-auto max-w-7xl px-6 pt-16 pb-12 sm:px-8 lg:px-12">
+      <!-- Grid Layout -->
+      <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-[1.8fr_1fr_1.2fr_1fr]">
+        
+        <!-- Column 1: Logo, Bio & Socials -->
         <div>
-          <NuxtLink to="/" class="flex items-center">
-            <img src="~/assets/common/Main-logo.png" alt="Human Care Laboratories" class="h-10 w-auto" />
+          <NuxtLink to="/" class="inline-block">
+            <img 
+              src="~/assets/common/Main-logo.png" 
+              alt="Human Care Laboratories" 
+              class="h-10 w-auto" 
+            />
           </NuxtLink>
-          <p class="mt-4 max-w-xs text-sm leading-relaxed text-slate-500">
-            Human Care Laboratories focuses on providing high-quality healthcare solutions to improve lives.
-            With innovation and reliability, we aim to meet diverse health and wellness needs.
+
+          <p class="mt-5 max-w-sm text-xs sm:text-sm leading-relaxed text-slate-500">
+            Human Care Laboratories focuses on providing high-quality healthcare solutions to improve lives. With innovation and reliability, we aim to meet diverse health and wellness needs.
           </p>
 
-          <!-- Certification badges -->
-          <div class="mt-6 flex flex-wrap gap-2">
-            <span
-              v-for="cert in certifications"
-              :key="cert"
-              class="rounded-full border border-brand-teal/20 bg-white px-3 py-1 text-[11px] font-semibold tracking-wide text-brand-navy shadow-sm transition-colors hover:border-brand-teal/50"
-            >
-              {{ cert }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Company -->
-        <div>
-          <h3 class="relative inline-block pb-2 text-sm font-semibold uppercase tracking-wide text-brand-navy">
-            Company
-            <span class="absolute -bottom-0.5 left-0 h-0.5 w-6 rounded-full bg-brand-teal" />
-          </h3>
-          <ul class="mt-4 space-y-3 text-sm">
-            <li v-for="link in companyLinks" :key="link.to">
-              <NuxtLink :to="link.to" class="text-slate-500 transition-colors hover:text-brand-teal">
-                {{ link.label }}
-              </NuxtLink>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Services -->
-        <div>
-          <h3 class="relative inline-block pb-2 text-sm font-semibold uppercase tracking-wide text-brand-navy">
-            Services
-            <span class="absolute -bottom-0.5 left-0 h-0.5 w-6 rounded-full bg-brand-teal" />
-          </h3>
-          <ul class="mt-4 space-y-3 text-sm">
-            <li v-for="link in serviceLinks" :key="link.to">
-              <NuxtLink :to="link.to" class="text-slate-500 transition-colors hover:text-brand-teal">
-                {{ link.label }}
-              </NuxtLink>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Quick Links -->
-        <div>
-          <h3 class="relative inline-block pb-2 text-sm font-semibold uppercase tracking-wide text-brand-navy">
-            Quick Links
-            <span class="absolute -bottom-0.5 left-0 h-0.5 w-6 rounded-full bg-brand-teal" />
-          </h3>
-          <ul class="mt-4 space-y-3 text-sm">
-            <li v-for="link in quickLinks" :key="link.to">
-              <NuxtLink :to="link.to" class="text-slate-500 transition-colors hover:text-brand-teal">
-                {{ link.label }}
-              </NuxtLink>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Socials -->
-        <div>
-          <h3 class="relative inline-block pb-2 text-sm font-semibold uppercase tracking-wide text-brand-navy">
-            Socials
-            <span class="absolute -bottom-0.5 left-0 h-0.5 w-6 rounded-full bg-brand-teal" />
-          </h3>
-          <div class="mt-4 flex gap-3">
+          <!-- Light Circle Social Icons (Using components directly from icons folder) -->
+          <div class="mt-6 flex items-center gap-2.5">
             <a
-              v-for="social in socials"
-              :key="social.to"
-              :href="social.to"
-              :aria-label="social.label"
+              href="https://facebook.com"
+              aria-label="Facebook"
               target="_blank"
               rel="noopener noreferrer"
-              class="flex h-9 w-9 items-center justify-center rounded-full bg-brand-navy text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-teal hover:shadow-md"
+              class="flex h-8 w-8 items-center justify-center rounded-full bg-[#E2E8F0]/70 text-slate-600 transition-colors hover:bg-slate-300 hover:text-slate-900"
             >
-              <component :is="social.icon" class="!h-4 !w-4" />
+              <IconFacebook class="!h-3.5 !w-3.5 fill-current" />
+            </a>
+
+            <a
+              href="https://instagram.com"
+              aria-label="Instagram"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex h-8 w-8 items-center justify-center rounded-full bg-[#E2E8F0]/70 text-slate-600 transition-colors hover:bg-slate-300 hover:text-slate-900"
+            >
+              <IconInstagram class="!h-3.5 !w-3.5 " />
+            </a>
+
+            <a
+              href="https://youtube.com"
+              aria-label="YouTube"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex h-8 w-8 items-center justify-center rounded-full bg-[#E2E8F0]/70 text-slate-600 transition-colors hover:bg-slate-300 hover:text-slate-900"
+            >
+              <IconYoutube class="!h-3.5 !w-3.5 fill-current" />
             </a>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Bottom bar -->
-    <div class="border-t border-slate-200 bg-white">
-      <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-6 py-5 text-xs text-slate-500 sm:flex-row">
-        <p>&copy; {{ new Date().getFullYear() }} Human Care Laboratories. All Rights Reserved.</p>
-        <p class="font-medium text-brand-navy">GMP Certified · Peshawar Facility</p>
+        <!-- Column 2: Company -->
+        <div>
+          <h3 class="text-sm font-bold text-slate-800">
+            Company
+          </h3>
+          <ul class="mt-4 space-y-2.5 text-xs sm:text-sm">
+            <li v-for="link in companyLinks" :key="link.to">
+              <NuxtLink :to="link.to" class="text-slate-500 transition-colors hover:text-slate-900">
+                {{ link.label }}
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Services -->
+        <div>
+          <h3 class="text-sm font-bold text-slate-800">
+            Services
+          </h3>
+          <ul class="mt-4 space-y-2.5 text-xs sm:text-sm">
+            <li v-for="link in serviceLinks" :key="link.to">
+              <NuxtLink :to="link.to" class="text-slate-500 transition-colors hover:text-slate-900">
+                {{ link.label }}
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Quick Links -->
+        <div>
+          <h3 class="text-sm font-bold text-slate-800">
+            Quick Links
+          </h3>
+          <ul class="mt-4 space-y-2.5 text-xs sm:text-sm">
+            <li v-for="link in quickLinks" :key="link.to">
+              <NuxtLink :to="link.to" class="text-slate-500 transition-colors hover:text-slate-900">
+                {{ link.label }}
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
+
       </div>
+
+      <!-- Bottom Bar Divider Line -->
+      <div class="mt-12 border-t border-slate-200/60 pt-6">
+        <div class="flex flex-col items-center justify-between gap-3 text-xs text-slate-400 sm:flex-row">
+          <!-- Left Copyright -->
+          <p>&copy; {{ new Date().getFullYear() }} Human Care Laboratories. All Rights Reserved.</p>
+
+          <!-- Right Credit Tag -->
+          <p class="flex items-center gap-1.5 text-slate-500">
+            <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+            </svg>
+            <span>Website & SEO work by</span>
+            <a 
+              href="#" 
+              target="_blank" 
+              class="font-medium text-slate-600 underline underline-offset-2 transition-colors hover:text-slate-900"
+            >
+              Fast Grow More
+            </a>
+          </p>
+        </div>
+      </div>
+
     </div>
   </footer>
 </template>

@@ -10,3 +10,7 @@
 body {
   @apply bg-white text-slate-800 antialiased;
 }
+@theme {
+  --font-serif: "DM Serif Display", serif;
+  --font-sans: "DM Sans", sans-serif;
+}

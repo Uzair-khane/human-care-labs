@@ -1,30 +1,41 @@
 <script setup>
+import AboutSection from '~/components/Home/AboutSection.vue';
+import Categories from '~/components/Home/Categories.vue';
+import HeroSection from '~/components/Home/HeroSection.vue';
+import Partner from '~/components/Home/partner.vue';
+import ProductSection from '~/components/Home/ProductSection.vue';
+import ReiviewsSection from '~/components/Home/ReiviewsSection.vue';
+import StatesSection from '~/components/Home/StatesSection.vue';
+import WhoWeAre from '~/components/Home/WhoWeAre.vue';
+
 useSeoMeta({
   title: 'Human Care Laboratories — Precision Manufacturing'
 })
 </script>
 
 <template>
-  <div>
-        <div>
-     <CategoryStrip />
-  </div>
-  <section class="bg-brand-navy px-6 py-24 text-white">
-    <div class="mx-auto max-w-3xl text-center">
-      <h1 class="text-4xl font-bold sm:text-5xl">Precision Manufacturing for Peak Performance</h1>
-      <p class="mt-4 text-slate-300">
-        Research-driven, GMP-certified nutraceutical manufacturing from our Peshawar facility.
-      </p>
-      <div class="mt-8 flex justify-center gap-4">
-        <UButton variant="secondary">
-          <NuxtLink to="/products">Shop Products</NuxtLink>
-        </UButton>
-        <UButton variant="ghost" class="!text-white">
-          <NuxtLink to="/wholesale/apply">Request Wholesale Pricing</NuxtLink>
-        </UButton>
-      </div>
-    </div>
-  </section>
-  </div>
-
+ <div>
+  <HeroSection />
+ </div>
+ <div>
+  <StatesSection/>
+ </div>
+ <div>
+  <Categories/>
+ </div>
+<div>
+  <AboutSection/>
+</div>
+<div>
+  <ProductSection/>
+</div>
+<div>
+  <WhoWeAre/>
+</div>
+<div>
+  <Partner/>
+</div>
+<div>
+  <ReiviewsSection/>
+</div>
 </template>
