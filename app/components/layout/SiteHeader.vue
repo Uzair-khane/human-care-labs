@@ -74,7 +74,7 @@ watch(mobileMenuOpen, (isOpen) => {
       <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <!-- Logo -->
         <NuxtLink to="/" class="flex shrink-0 items-center">
-          <img src="~/assets/common/Main-logo.png" alt="Human Care Laboratories" class="h-10 w-auto" />
+          <img src="~/assets/Common/Main-logo.png" alt="Human Care Laboratories" class="h-10 w-auto" />
         </NuxtLink>
 
         <!-- Nav links -->
