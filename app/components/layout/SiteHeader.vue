@@ -194,7 +194,7 @@ watch(mobileMenuOpen, (isOpen) => {
         class="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[80%] flex-col overflow-y-auto bg-white shadow-xl md:hidden"
       >
         <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-          <img src="~/assets/common/Main-logo.png" alt="Human Care Laboratories" class="h-8 w-auto" />
+          <img src="~/assets/Common/Main-logo.png" alt="Human Care Laboratories" class="h-8 w-auto" />
           <button aria-label="Close menu" class="text-slate-500 hover:text-slate-700" @click="closeMobileMenu">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />

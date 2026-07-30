@@ -1,9 +1,9 @@
 <script setup>
 // Categories component ki tarah same clean asset imports
-import doctorWoman from '~/assets/common/about/doctor-woman.png'
-import careHands from '~/assets/common/about/care-hands.png'
-import physicalTherapy from '~/assets/common/about/physical-therapy.png'
-import familyCare from '~/assets/common/about/family-care.png'
+import doctorWoman from '~/assets/Common/about/doctor-woman.png'
+import careHands from '~/assets/Common/about/care-hands.png'
+import physicalTherapy from '~/assets/Common/about/physical-therapy.png'
+import familyCare from '~/assets/Common/about/family-care.png'
 
 const aboutData = ref({
   tagline: "ABOUT US",
