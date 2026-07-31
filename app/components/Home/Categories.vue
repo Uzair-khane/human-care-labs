@@ -17,6 +17,7 @@ import gutHealth from '~/assets/Common/categories/gut_health.jpeg'
 import herbalHealth from '~/assets/Common/categories/herbal_health.jpeg'
 import womensHealth from '~/assets/Common/categories/womens-health.png'
 import babyMilk from '~/assets/Common/categories/baby-milk.png'
+
 const categories = [
   { name: "Men's Health", image: mensHealth, to: '/categories/mens-health' },
   { name: "Women's Health", image: womensHealth, to: '/categories/womens-health' },
@@ -37,6 +38,17 @@ const categories = [
   { name: 'Herbal Health', image: herbalHealth, to: '/categories/herbal-health' },
   { name: 'Baby Milk', image: babyMilk, to: '/categories/baby-milk' }
 ]
+
+const INITIAL_COUNT = 8
+const showAll = ref(false)
+
+const visibleCategories = computed(() =>
+  showAll.value ? categories : categories.slice(0, INITIAL_COUNT)
+)
+
+function toggleShowAll() {
+  showAll.value = !showAll.value
+}
 </script>
 
 <template>
@@ -44,21 +56,37 @@ const categories = [
     <!-- Header -->
     <div class="mb-6 flex items-center justify-between">
       <h2 class="text-xl font-bold text-gray-900 sm:text-2xl">Health Categories</h2>
-      <NuxtLink
-        to="/categories"
+      <button
         class="flex items-center gap-1.5 text-xs font-semibold text-gray-800 transition-colors hover:text-gray-600 sm:text-sm"
+        @click="toggleShowAll"
       >
-        View All
-        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        {{ showAll ? 'Show Less' : 'View All' }}
+        <svg
+          class="h-4 w-4 transition-transform duration-300"
+          :class="{ 'rotate-90': showAll }"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
           <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
         </svg>
-      </NuxtLink>
+      </button>
     </div>
 
     <!-- Grid -->
-    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:gap-6">
+    <TransitionGroup
+      tag="div"
+      class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:gap-6"
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0 -translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition-all duration-200 ease-in absolute"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
       <NuxtLink
-        v-for="category in categories"
+        v-for="category in visibleCategories"
         :key="category.to"
         :to="category.to"
         class="group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white p-1.5 shadow-sm transition-all duration-300 hover:shadow-md"
@@ -76,7 +104,7 @@ const categories = [
             Image coming soon
           </div>
         </div>
-        
+
         <!-- Title section -->
         <div class="flex items-center justify-center py-3">
           <span class="text-center text-sm font-semibold text-gray-900 group-hover:text-black">
@@ -84,6 +112,6 @@ const categories = [
           </span>
         </div>
       </NuxtLink>
-    </div>
+    </TransitionGroup>
   </section>
 </template>

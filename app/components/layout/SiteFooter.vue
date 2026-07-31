@@ -57,7 +57,7 @@ const quickLinks = [
               rel="noopener noreferrer"
               class="flex h-8 w-8 items-center justify-center rounded-full bg-[#E2E8F0]/70 text-slate-600 transition-colors hover:bg-slate-300 hover:text-slate-900"
             >
-              <IconFacebook class="!h-3.5 !w-3.5 fill-current" />
+              <IconFacebook class="!h-3.5 !w-3.5 " />
             </a>
 
             <a
@@ -67,7 +67,7 @@ const quickLinks = [
               rel="noopener noreferrer"
               class="flex h-8 w-8 items-center justify-center rounded-full bg-[#E2E8F0]/70 text-slate-600 transition-colors hover:bg-slate-300 hover:text-slate-900"
             >
-              <IconInstagram class="!h-3.5 !w-3.5 fill-current" />
+              <IconInstagram class="!h-3.5 !w-3.5 " />
             </a>
 
             <a
