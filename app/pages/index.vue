@@ -1,6 +1,7 @@
 <script setup>
 import AboutSection from '~/components/Home/AboutSection.vue';
 import Categories from '~/components/Home/Categories.vue';
+import Cirtificate from '~/components/Home/Cirtificate.vue';
 import HeroSection from '~/components/Home/HeroSection.vue';
 import Partner from '~/components/Home/partner.vue';
 import ProductSection from '~/components/Home/ProductSection.vue';
@@ -36,6 +37,10 @@ useSeoMeta({
   <Partner/>
 </div>
 <div>
+  <Cirtificate/>
+</div>
+<div>
   <ReiviewsSection/>
 </div>
+
 </template>

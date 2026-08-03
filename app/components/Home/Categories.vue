@@ -39,7 +39,7 @@ const categories = [
   { name: 'Baby Milk', image: babyMilk, to: '/categories/baby-milk' }
 ]
 
-const INITIAL_COUNT = 12
+const INITIAL_COUNT = 7
 const showAll = ref(false)
 
 const visibleCategories = computed(() =>
@@ -74,44 +74,52 @@ function toggleShowAll() {
       </button>
     </div>
 
-    <!-- Grid -->
-    <TransitionGroup
-      tag="div"
-      class="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:gap-6"
-      enter-active-class="transition-all duration-300 ease-out"
-      enter-from-class="opacity-0 -translate-y-2"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition-all duration-200 ease-in absolute"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <NuxtLink
-        v-for="category in visibleCategories"
-        :key="category.to"
-        :to="category.to"
-        class="group flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white p-1.5 shadow-sm transition-all duration-300 hover:shadow-md"
-      >
-        <!-- Aspect ratio set to portrait (3:4) to match Figma design -->
-        <div class="relative aspect-[3/4] w-full overflow-hidden rounded-lg bg-gray-50">
-          <img
-            v-if="category.image"
-            :src="category.image"
-            :alt="category.name"
-            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
-          />
-          <div v-else class="flex h-full w-full items-center justify-center p-2 text-center text-xs text-gray-400">
-            Image coming soon
-          </div>
+ <!-- Grid Container -->
+<TransitionGroup
+  tag="div"
+  class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 xl:gap-4"
+  enter-active-class="transition-all duration-300 ease-out"
+  enter-from-class="opacity-0 -translate-y-2"
+  enter-to-class="opacity-100 translate-y-0"
+  leave-active-class="transition-all duration-200 ease-in absolute"
+  leave-from-class="opacity-100"
+  leave-to-class="opacity-0"
+>
+  <NuxtLink
+    v-for="category in visibleCategories"
+    :key="category.to"
+    :to="category.to"
+    class="group flex flex-col overflow-hidden rounded-t-md rounded-b-[2px] bg-[#f6faf283] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+  >
+   
+    <div class="relative w-full bg-[#eceee8] ">
+      
+      <!-- Aspect Ratio Image Box -->
+      <div class="relative aspect-[3/4] w-full overflow-hidden rounded-top-[5px] bg-gray-200">
+        <img
+          v-if="category.image"
+          :src="category.image"
+          :alt="category.name"
+          class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
+        <div v-else class="flex h-full w-full items-center justify-center p-2 text-center text-xs text-gray-400">
+          Image coming soon
         </div>
 
-        <!-- Title section -->
-        <div class="flex items-center justify-center py-3">
-          <span class="text-center text-sm font-semibold text-gray-900 group-hover:text-black">
-            {{ category.name }}
-          </span>
-        </div>
-      </NuxtLink>
-    </TransitionGroup>
+
+        <div class="pointer-events-none absolute inset-2.5 rounded-[12px] border border-[#2b443c]/35 z-10"></div>
+      </div>
+
+    </div>
+
+   
+    <div class="flex items-center justify-center bg-[#f6faf283]  py-2 px-2">
+      <span class="text-center text-[16px] font-bold text-gray-900 transition-colors group-hover:text-black">
+        {{ category.name }}
+      </span>
+    </div>
+  </NuxtLink>
+</TransitionGroup>
   </section>
 </template>
