@@ -193,44 +193,43 @@ function resetFilters() {
       </div>
 
       <!-- GRID VIEW -->
-      <div 
-        v-if="currentView === 'grid' && paginatedProducts.length > 0" 
-        class="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+   <div 
+     v-if="currentView === 'grid' && paginatedProducts.length > 0" 
+     class="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+   >
+  <div 
+    v-for="product in paginatedProducts" 
+    :key="product.id"
+    class="group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+  >
+    <div class="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-white p-4">
+      <span 
+        :class="product.stock === 'IN STOCK' ? 'bg-[#A4CAFE] text-slate-700' : 'bg-red-100 text-red-700'"
+        class="absolute left-2.5 top-2.5 rounded px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase"
       >
-        <div 
-          v-for="product in paginatedProducts" 
-          :key="product.id"
-          class="group flex flex-col justify-between overflow-hidden rounded-xl border border-gray-100 bg-white p-3 shadow-xs transition-all duration-300 hover:shadow-md"
-        >
-          <div>
-            <div class="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-[#F3F4F6] p-4">
-              <span 
-                :class="product.stock === 'IN STOCK' ? 'bg-[#A4CAFE] text-slate-700' : 'bg-red-100 text-red-700'"
-                class="absolute left-2.5 top-2.5 rounded px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase"
-              >
-                {{ product.stock }}
-              </span>
+        {{ product.stock }}
+      </span>
 
-              <img
-                :src="product.image"
-                :alt="product.title"
-                class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
-              />
-            </div>
+      <img
+        :src="product.image"
+        :alt="product.title"
+        class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+        loading="lazy"
+      />
+    </div>
 
-            <div class="mt-4 px-1 pb-2">
-              <p class="text-[10px] font-bold tracking-wider text-[#14B8A6] uppercase">
-                {{ product.category }}
-              </p>
-              <h3 class="mt-1.5 line-clamp-2 text-sm font-bold text-slate-800 transition-colors group-hover:text-blue-900">
-                {{ product.title }}
-              </h3>
-            </div>
-          </div>
-        </div>
+    <div class="flex flex-1 flex-col bg-[#f1f5fd62] justify-between px-4 py-7 ">
+      <div>
+        <p class="text-[10px] font-bold tracking-wider text-[#14B8A6] uppercase">
+          {{ product.category }}
+        </p>
+        <h3 class="mt-1.5 line-clamp-2 text-base font-extrabold leading-snug text-gray-900 transition-colors group-hover:text-blue-900">
+          {{ product.title }}
+        </h3>
       </div>
-
+    </div>
+  </div>
+</div>
       <!-- LIST VIEW -->
       <div 
         v-if="currentView === 'list' && paginatedProducts.length > 0" 

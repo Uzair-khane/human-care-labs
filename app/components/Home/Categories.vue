@@ -39,7 +39,7 @@ const categories = [
   { name: 'Baby Milk', image: babyMilk, to: '/categories/baby-milk' }
 ]
 
-const INITIAL_COUNT = 8
+const INITIAL_COUNT = 12
 const showAll = ref(false)
 
 const visibleCategories = computed(() =>
@@ -77,7 +77,7 @@ function toggleShowAll() {
     <!-- Grid -->
     <TransitionGroup
       tag="div"
-      class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:gap-6"
+      class="grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:gap-6"
       enter-active-class="transition-all duration-300 ease-out"
       enter-from-class="opacity-0 -translate-y-2"
       enter-to-class="opacity-100 translate-y-0"
