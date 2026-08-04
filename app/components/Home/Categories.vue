@@ -3,40 +3,31 @@ import mensHealth from '~/assets/Common/categories/men_health-2.png'
 import nutrisports from '~/assets/Common/categories/nutrisports.jpeg'
 import multivitamins from '~/assets/Common/categories/multivitamins_1.jpeg'
 import fertilitySupport from '~/assets/Common/categories/fertility_support.jpeg'
-import kidsTeensHealth from '~/assets/Common/categories/kids&teens_health.jpeg'
-import bonesJoints from '~/assets/Common/categories/bones&joints.jpeg'
+import kidsTeensHealth from '~/assets/Common/categories/kids-teens-health.png'
+import bonesJoints from '~/assets/Common/categories/bones-joints.png'
 import stressSleep from '~/assets/Common/categories/stress&sleep.png'
 import weightManagement from '~/assets/Common/categories/weight_management.png'
 import immuneSupport from '~/assets/Common/categories/immune_support.jpeg'
-import brainNerves from '~/assets/Common/categories/brain&nerves.png'
+import brainNerves from '~/assets/Common/categories/brain-nerves.png'
 import muscleSupport from '~/assets/Common/categories/muscle_support.jpeg'
 import bloodSugarSupport from '~/assets/Common/categories/blood_suger_support.jpeg'
 import heartHealth from '~/assets/Common/categories/heart_support.jpeg'
 import visionSupport from '~/assets/Common/categories/vision_support.jpeg'
-import gutHealth from '~/assets/Common/categories/gut_health.jpeg'
-import herbalHealth from '~/assets/Common/categories/herbal_health.jpeg'
+import gutHealth from '~/assets/Common/categories/gut-health.png'
+import herbalHealth from '~/assets/Common/categories/herbal-health.png'
 import womensHealth from '~/assets/Common/categories/womens-health.png'
 import babyMilk from '~/assets/Common/categories/baby-milk.png'
+import coughCold from '~/assets/Common/categories/cold.png'
 
 const categories = [
-  { name: "Men's Health", image: mensHealth, to: '/categories/mens-health' },
-  { name: "Women's Health", image: womensHealth, to: '/categories/womens-health' },
-  { name: 'NutriSports', image: nutrisports, to: '/categories/nutrisports' },
-  { name: 'Multivitamins', image: multivitamins, to: '/categories/multivitamins' },
-  { name: 'Fertility Support', image: fertilitySupport, to: '/categories/fertility-support' },
-  { name: "Kids' & Teens' Health", image: kidsTeensHealth, to: '/categories/kids-teens-health' },
-  { name: 'Bones & Joints', image: bonesJoints, to: '/categories/bones-joints' },
-  { name: 'Stress & Sleep', image: stressSleep, to: '/categories/stress-sleep' },
-  { name: 'Weight Management', image: weightManagement, to: '/categories/weight-management' },
-  { name: 'Immune Support', image: immuneSupport, to: '/categories/immune-support' },
-  { name: 'Brain & Nerves', image: brainNerves, to: '/categories/brain-nerves' },
-  { name: 'Muscle Support', image: muscleSupport, to: '/categories/muscle-support' },
-  { name: 'Blood Sugar Support', image: bloodSugarSupport, to: '/categories/blood-sugar-support' },
-  { name: 'Heart Health', image: heartHealth, to: '/categories/heart-health' },
-  { name: 'Vision Support', image: visionSupport, to: '/categories/vision-support' },
   { name: 'Gut Health', image: gutHealth, to: '/categories/gut-health' },
+  { name: 'Gut Health', image: coughCold, to: '/categories/cold' },
+  { name: 'Bones & Joints', image: bonesJoints, to: '/categories/bones-joints' },
+  { name: 'Brain & Nerves', image: brainNerves, to: '/categories/brain-nerves' },
+  { name: "Women's Health", image: womensHealth, to: '/categories/womens-health' },
+  { name: "Kids' & Teens' Health", image: kidsTeensHealth, to: '/categories/kids-teens-health' },
   { name: 'Herbal Health', image: herbalHealth, to: '/categories/herbal-health' },
-  { name: 'Baby Milk', image: babyMilk, to: '/categories/baby-milk' }
+ 
 ]
 
 const INITIAL_COUNT = 7
@@ -74,52 +65,47 @@ function toggleShowAll() {
       </button>
     </div>
 
- <!-- Grid Container -->
-<TransitionGroup
-  tag="div"
-  class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 xl:gap-4"
-  enter-active-class="transition-all duration-300 ease-out"
-  enter-from-class="opacity-0 -translate-y-2"
-  enter-to-class="opacity-100 translate-y-0"
-  leave-active-class="transition-all duration-200 ease-in absolute"
-  leave-from-class="opacity-100"
-  leave-to-class="opacity-0"
->
-  <NuxtLink
-    v-for="category in visibleCategories"
-    :key="category.to"
-    :to="category.to"
-    class="group flex flex-col overflow-hidden rounded-t-md rounded-b-[2px] bg-[#f6faf283] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
-  >
-   
-    <div class="relative w-full bg-[#eceee8] ">
-      
-      <!-- Aspect Ratio Image Box -->
-      <div class="relative aspect-[3/4] w-full overflow-hidden rounded-top-[5px] bg-gray-200">
-        <img
-          v-if="category.image"
-          :src="category.image"
-          :alt="category.name"
-          class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          loading="lazy"
-        />
-        <div v-else class="flex h-full w-full items-center justify-center p-2 text-center text-xs text-gray-400">
-          Image coming soon
+    <!-- Grid Container -->
+    <TransitionGroup
+      tag="div"
+      class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 xl:gap-4"
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0 -translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition-all duration-200 ease-in absolute"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <NuxtLink
+        v-for="category in visibleCategories"
+        :key="category.to"
+        :to="category.to"
+        class="group flex flex-col overflow-hidden rounded-t-md rounded-b-[5px] bg-[#FAFBFB] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+      >
+        <div class="relative w-full bg-[#eceee8]">
+          <!-- Aspect Ratio Image Box -->
+          <div class="relative aspect-[4/6] w-full overflow-hidden rounded-t-[5px] bg-gray-200">
+            <img
+              v-if="category.image"
+              :src="category.image"
+              :alt="category.name"
+              class="h-full w-full  object-top transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div v-else class="flex h-full w-full items-center justify-center p-3 text-center text-xs text-gray-400">
+              Image coming soon
+            </div>
+
+            <div class="pointer-events-none absolute inset-2.5 rounded-[12px] z-10"></div>
+          </div>
         </div>
 
-
-        <div class="pointer-events-none absolute inset-2.5 rounded-[12px] border border-[#2b443c]/35 z-10"></div>
-      </div>
-
-    </div>
-
-   
-    <div class="flex items-center justify-center bg-[#f6faf283]  py-2 px-2">
-      <span class="text-center text-[16px] font-bold text-gray-900 transition-colors group-hover:text-black">
-        {{ category.name }}
-      </span>
-    </div>
-  </NuxtLink>
-</TransitionGroup>
+        <div class="flex items-center justify-center bg-[#FAFBFB] py-3 px-2">
+          <span class="text-center text-[15px] font-bold text-gray-900 transition-colors group-hover:text-black">
+            {{ category.name }}
+          </span>
+        </div>
+      </NuxtLink>
+    </TransitionGroup>
   </section>
 </template>
