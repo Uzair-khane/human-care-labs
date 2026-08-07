@@ -41,7 +41,7 @@ watch([mobileMenuOpen, cartDrawerOpen], ([isMenuOpen, isCartOpen]) => {
 </script>
 
 <template>
-  <div>
+  <div class="sticky top-0 z-50 w-full bg-white shadow-sm">
     <!-- Top contact bar -->
     <div class="bg-[#1C4489] px-4 py-2.5 text-white">
       <div class="mx-auto flex max-w-7xl flex-col items-center gap-1.5 text-[11px] sm:flex-row sm:flex-wrap sm:justify-between sm:gap-3 sm:text-xs md:text-sm">
@@ -307,7 +307,7 @@ watch([mobileMenuOpen, cartDrawerOpen], ([isMenuOpen, isCartOpen]) => {
               <div class="flex flex-1 flex-col justify-between">
                 <div>
                   <h3 class="text-sm font-bold leading-snug text-slate-800 line-clamp-2">{{ item.product.title }}</h3>
-                  <p class="mt-1 text-sm font-extrabold text-[#14B8A6]">${{ item.product.retailPrice }}</p>
+                  <p class="mt-1 text-sm font-extrabold text-[#14B8A6]">Rs. {{ item.product.retailPrice }}</p>
                 </div>
                 <div class="mt-2 flex items-center justify-between">
                   <div class="flex items-center rounded-lg border border-slate-200 bg-white shadow-xs">
@@ -333,11 +333,11 @@ watch([mobileMenuOpen, cartDrawerOpen], ([isMenuOpen, isCartOpen]) => {
         <div class="border-t border-slate-200 p-4">
           <div class="mb-4 flex items-center justify-between text-base font-bold text-slate-800">
             <span>Subtotal</span>
-            <span>${{ cart.subtotal.toFixed(2) }}</span>
+            <span>Rs. {{ cart.subtotal.toFixed(2) }}</span>
           </div>
           <button 
-            @click="cartDrawerOpen = false; navigateTo('/checkout')"
-            class="w-full rounded-md bg-[#1C4489] px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-opacity-90 disabled:cursor-not-allowed disabled:bg-slate-300"
+            @click="cartDrawerOpen = false; navigateTo('/checkout/checkout')"
+            class="w-full rounded-md bg-brand-teal px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-teal/90 disabled:cursor-not-allowed disabled:bg-slate-300"
             :disabled="cart.items.length === 0"
           >
             Proceed to Checkout

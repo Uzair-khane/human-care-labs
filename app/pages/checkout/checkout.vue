@@ -63,17 +63,20 @@ function submitOrder() {
         </NuxtLink>
       </div>
 
-      <div v-else class="grid grid-cols-1 gap-12 lg:grid-cols-3">
-        <!-- Left Column: Form -->
-        <div class="lg:col-span-2">
+      <div v-else>
+        <div class="mb-8">
           <h1 class="text-3xl font-extrabold text-slate-900">Checkout</h1>
           <p class="mt-2 text-sm text-slate-500">Please fill out your details to complete your order.</p>
+        </div>
 
-          <form @submit.prevent="submitOrder" class="mt-8 space-y-8">
-            
-            <!-- Personal Details -->
-            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 class="text-xl font-bold text-slate-800">Shipping Information</h2>
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <!-- Left Column: Form -->
+          <div class="lg:col-span-2">
+            <form @submit.prevent="submitOrder" class="space-y-8">
+              
+              <!-- Consolidated Form Details -->
+              <div class="rounded-xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-800">Shipping Information</h2>
               <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
                   <label class="block text-sm font-semibold text-slate-700">Full Name *</label>
@@ -96,13 +99,12 @@ function submitOrder() {
                   <input v-model="form.postalCode" type="text" required class="mt-2 w-full rounded-md border border-slate-300 px-4 py-2.5 text-sm focus:border-[#14B8A6] focus:outline-none focus:ring-1 focus:ring-[#14B8A6]" />
                 </div>
               </div>
-            </div>
 
-            <!-- Payment Methods -->
-            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 class="text-xl font-bold text-slate-800">Payment Method</h2>
-              
-              <div class="mt-6 space-y-4">
+              <hr class="my-8 border-slate-100" />
+
+              <div class="mt-6">
+                <label class="block text-sm font-semibold text-slate-700 mb-4">Select Payment Method *</label>
+                <div class="space-y-4">
                 
                 <!-- Easypaisa -->
                 <div class="rounded-lg border" :class="paymentMethod === 'easypaisa' ? 'border-[#14B8A6] bg-[#14B8A6]/5' : 'border-slate-200'">
@@ -157,16 +159,16 @@ function submitOrder() {
 
               </div>
             </div>
-
+          </div>
           </form>
         </div>
 
         <!-- Right Column: Order Summary -->
         <div class="lg:col-span-1">
-          <div class="sticky top-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="text-xl font-bold text-slate-800">Order Summary</h2>
             
-            <div class="mt-6 flex flex-col gap-4 max-h-80 overflow-y-auto">
+            <div class="mt-6 flex flex-col gap-4 max-h-[50vh] overflow-y-auto pt-3 pr-2">
               <div v-if="cart.items.length === 0" class="text-sm text-slate-500">Your cart is empty.</div>
               <div v-for="item in cart.items" :key="item.product.id" class="flex items-center gap-3 border-b border-slate-100 pb-3">
                 <div class="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-gray-50 border border-gray-100 p-1">
@@ -175,7 +177,7 @@ function submitOrder() {
                 </div>
                 <div class="flex-1">
                   <h4 class="text-xs font-semibold text-slate-700 line-clamp-2">{{ item.product.title }}</h4>
-                  <p class="mt-0.5 text-xs font-bold text-[#14B8A6]">${{ item.product.retailPrice }}</p>
+                  <p class="mt-0.5 text-xs font-bold text-[#14B8A6]">Rs. {{ item.product.retailPrice }}</p>
                 </div>
               </div>
             </div>
@@ -183,22 +185,22 @@ function submitOrder() {
             <div class="mt-6 space-y-3 border-t border-slate-100 pt-6 text-sm">
               <div class="flex items-center justify-between font-medium text-slate-600">
                 <span>Subtotal</span>
-                <span>${{ cart.subtotal.toFixed(2) }}</span>
+                <span>Rs. {{ cart.subtotal.toFixed(2) }}</span>
               </div>
               <div class="flex items-center justify-between font-medium text-slate-600">
                 <span>Shipping</span>
-                <span>$0.00</span>
+                <span>Rs. 0.00</span>
               </div>
               <div class="flex items-center justify-between border-t border-slate-200 pt-3 text-lg font-extrabold text-slate-900">
                 <span>Total</span>
-                <span>${{ cart.subtotal.toFixed(2) }}</span>
+                <span>Rs. {{ cart.subtotal.toFixed(2) }}</span>
               </div>
             </div>
 
             <button 
               @click="submitOrder"
               :disabled="cart.items.length === 0 || isSubmitting"
-              class="mt-6 w-full rounded-md bg-[#1C4489] px-4 py-3.5 text-center text-sm font-bold text-white shadow-sm transition-colors hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-[#1C4489] focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300"
+              class="mt-6 w-full rounded-md bg-brand-teal px-4 py-3.5 text-center text-sm font-bold text-white shadow-sm transition-colors hover:bg-brand-teal/90 focus:outline-none focus:ring-2 focus:ring-brand-teal focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {{ isSubmitting ? 'Processing...' : 'Place Order' }}
             </button>
@@ -207,6 +209,7 @@ function submitOrder() {
         </div>
       </div>
 
+      </div>
     </div>
   </div>
 </template>

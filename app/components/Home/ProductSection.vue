@@ -269,12 +269,12 @@ function addToCart(event, product) {
         <h3 class="mt-1.5 line-clamp-2 text-base font-extrabold leading-snug text-gray-900 transition-colors group-hover:text-blue-900">
           {{ product.title }}
         </h3>
-        <p class="mt-1 text-sm font-bold text-gray-700">${{ product.retailPrice }}</p>
+        <p class="mt-1 text-sm font-bold text-gray-700">Rs. {{ product.retailPrice }}</p>
       </div>
       <div class="mt-4 flex items-center justify-between">
         <button 
           @click="(e) => addToCart(e, product)"
-          class="flex items-center gap-2 rounded-lg bg-[#1C4489] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#14B8A6] focus:outline-none"
+          class="flex items-center gap-2 rounded-full bg-[#14B8A6] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#14B8A6]/90 focus:outline-none"
         >
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -307,13 +307,13 @@ function addToCart(event, product) {
             <h3 class="mt-1 text-base font-bold text-slate-800 transition-colors group-hover:text-blue-900">
               {{ product.title }}
             </h3>
-            <p class="mt-1 text-sm font-bold text-gray-700">${{ product.retailPrice }}</p>
+            <p class="mt-1 text-sm font-bold text-gray-700">Rs. {{ product.retailPrice }}</p>
           </div>
 
           <div class="flex items-center sm:pr-4">
             <button 
               @click="(e) => addToCart(e, product)"
-              class="flex items-center gap-2 rounded-lg bg-[#1C4489] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#14B8A6] focus:outline-none"
+              class="flex items-center gap-2 rounded-full bg-[#14B8A6] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#14B8A6]/90 focus:outline-none"
             >
               <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
