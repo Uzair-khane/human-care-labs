@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useCartStore } from '~/stores/cart'
 
 // Asset imports corresponding to your VS Code directory structure
 import bg1 from '~/assets/products/Background (1).png'
@@ -58,7 +59,7 @@ const allProducts = ref([
   { id: 28, title: 'IQ Focus Junior', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bg4 },
   { id: 29, title: 'Scab-Care Herbal Soap', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg5 },
   { id: 30, title: 'Permitron Plus Lotion', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg7 },
-])
+].map(p => ({ ...p, retailPrice: 15.99 })))
 
 // Layout View Toggle State ('grid' | 'list')
 const currentView = ref('grid')
@@ -115,6 +116,48 @@ function goToPage(page) {
 function resetFilters() {
   selectedCategory.value = 'all'
   selectedStock.value = 'all'
+}
+
+const cart = useCartStore()
+
+function addToCart(event, product) {
+  const imgElement = event.currentTarget.closest('.group').querySelector('img')
+  const cartIcon = document.getElementById('nav-cart-icon')
+
+  if (imgElement && cartIcon) {
+    const imgRect = imgElement.getBoundingClientRect()
+    const cartRect = cartIcon.getBoundingClientRect()
+
+    const flyingImg = imgElement.cloneNode()
+    flyingImg.style.position = 'fixed'
+    flyingImg.style.top = `${imgRect.top}px`
+    flyingImg.style.left = `${imgRect.left}px`
+    flyingImg.style.width = `${imgRect.width}px`
+    flyingImg.style.height = `${imgRect.height}px`
+    flyingImg.style.zIndex = '9999'
+    flyingImg.style.transition = 'all 0.8s cubic-bezier(0.25, 1, 0.5, 1)'
+    flyingImg.style.opacity = '0.8'
+    flyingImg.style.objectFit = 'contain'
+    
+    document.body.appendChild(flyingImg)
+
+    // Trigger reflow
+    void flyingImg.offsetWidth
+
+    flyingImg.style.top = `${cartRect.top}px`
+    flyingImg.style.left = `${cartRect.left}px`
+    flyingImg.style.width = '24px'
+    flyingImg.style.height = '24px'
+    flyingImg.style.opacity = '0'
+    flyingImg.style.transform = 'scale(0.1)'
+
+    setTimeout(() => {
+      flyingImg.remove()
+      cart.addItem(product)
+    }, 800)
+  } else {
+    cart.addItem(product)
+  }
 }
 </script>
 
@@ -226,6 +269,18 @@ function resetFilters() {
         <h3 class="mt-1.5 line-clamp-2 text-base font-extrabold leading-snug text-gray-900 transition-colors group-hover:text-blue-900">
           {{ product.title }}
         </h3>
+        <p class="mt-1 text-sm font-bold text-gray-700">Rs. {{ product.retailPrice }}</p>
+      </div>
+      <div class="mt-4 flex items-center justify-between">
+        <button 
+          @click="(e) => addToCart(e, product)"
+          class="flex items-center gap-2 rounded-full bg-[#14B8A6] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#14B8A6]/90 focus:outline-none"
+        >
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          Add to Cart
+        </button>
       </div>
     </div>
   </div>
@@ -252,6 +307,19 @@ function resetFilters() {
             <h3 class="mt-1 text-base font-bold text-slate-800 transition-colors group-hover:text-blue-900">
               {{ product.title }}
             </h3>
+            <p class="mt-1 text-sm font-bold text-gray-700">Rs. {{ product.retailPrice }}</p>
+          </div>
+
+          <div class="flex items-center sm:pr-4">
+            <button 
+              @click="(e) => addToCart(e, product)"
+              class="flex items-center gap-2 rounded-full bg-[#14B8A6] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#14B8A6]/90 focus:outline-none"
+            >
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              Add
+            </button>
           </div>
         </div>
       </div>
