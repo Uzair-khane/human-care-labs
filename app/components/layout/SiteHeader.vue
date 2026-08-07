@@ -336,7 +336,7 @@ watch([mobileMenuOpen, cartDrawerOpen], ([isMenuOpen, isCartOpen]) => {
             <span>Rs. {{ cart.subtotal.toFixed(2) }}</span>
           </div>
           <button 
-            @click="cartDrawerOpen = false; navigateTo('/checkout/checkout')"
+            @click="cartDrawerOpen = false; navigateTo('/Payments/checkout')"
             class="w-full rounded-md bg-brand-teal px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-teal/90 disabled:cursor-not-allowed disabled:bg-slate-300"
             :disabled="cart.items.length === 0"
           >
