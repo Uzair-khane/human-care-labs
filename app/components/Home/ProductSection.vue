@@ -19,47 +19,47 @@ import bgMain from '~/assets/products/Background.png'
 // Ref for smooth scroll to catalog section instead of absolute page top
 const catalogSection = ref(null)
 
-// All Products Master Data
+// All Products Master Data — retailPrice (PKR) is stored right on each product
 const allProducts = ref([
   // PAGE 1 Items (1-12)
-  { id: 1, title: 'Apletyz Syrup – Eat. Nourish. Grow.', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg1 },
-  { id: 2, title: 'Peptacid Antacid Syrup', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'IN STOCK', image: bg2 },
-  { id: 3, title: 'Castor Oil', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg3 },
+  { id: 1, title: 'Apletyz Syrup – Eat. Nourish. Grow.', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg1, retailPrice: 1299 },
+  { id: 2, title: 'Peptacid Antacid Syrup', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'IN STOCK', image: bg2, retailPrice: 899 },
+  { id: 3, title: 'Castor Oil', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg3, retailPrice: 1499 },
 
 
   
-  { id: 4, title: 'IQ Focus – Ginkgo Biloba Extract Syrup', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bg4 },
-  { id: 5, title: 'Scab-Care Soap', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg5 },
-  { id: 6, title: 'IQ Focus Syrup (Box)', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'OUT OF STOCK', image: bg6 },
-  { id: 7, title: 'Permitron Lotion', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg7 },
-  { id: 8, title: 'Pumsa Syrup', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bg8 },
-  { id: 9, title: 'Kidz D3 Drops', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg9 },
-  { id: 10, title: 'O.R.S Powder Sachet', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'IN STOCK', image: bg10 },
-  { id: 11, title: 'Glutox Tablets', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg11 },
-  { id: 12, title: 'Hi-Taller Syrup', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bgMain },
+  { id: 4, title: 'IQ Focus – Ginkgo Biloba Extract Syrup', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bg4, retailPrice: 2199 },
+  { id: 5, title: 'Scab-Care Soap', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg5, retailPrice: 649 },
+  { id: 6, title: 'IQ Focus Syrup (Box)', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'OUT OF STOCK', image: bg6, retailPrice: 2499 },
+  { id: 7, title: 'Permitron Lotion', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg7, retailPrice: 999 },
+  { id: 8, title: 'Pumsa Syrup', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bg8, retailPrice: 1799 },
+  { id: 9, title: 'Kidz D3 Drops', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg9, retailPrice: 1099 },
+  { id: 10, title: 'O.R.S Powder Sachet', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'IN STOCK', image: bg10, retailPrice: 349 },
+  { id: 11, title: 'Glutox Tablets', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg11, retailPrice: 2999 },
+  { id: 12, title: 'Hi-Taller Syrup', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bgMain, retailPrice: 1899 },
 
   // PAGE 2 Items (13-24)
-  { id: 13, title: 'Apletyz Syrup (Batch 2)', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg1 },
-  { id: 14, title: 'Peptacid Antacid Syrup (Batch 2)', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'IN STOCK', image: bg2 },
-  { id: 15, title: 'Castor Oil (Pure Extract)', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg3 },
-  { id: 16, title: 'IQ Focus – Advanced Formula', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bg4 },
-  { id: 17, title: 'Scab-Care Soap (Pack of 2)', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg5 },
-  { id: 18, title: 'IQ Focus Syrup (Family Box)', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'IN STOCK', image: bg6 },
-  { id: 19, title: 'Permitron Lotion 100ml', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg7 },
-  { id: 20, title: 'Pumsa Syrup High Strength', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bg8 },
-  { id: 21, title: 'Kidz D3 Drops Forte', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg9 },
-  { id: 22, title: 'O.R.S Powder Sachet (Lemon Flavor)', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'IN STOCK', image: bg10 },
-  { id: 23, title: 'Glutox Ultra Tablets', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg11 },
-  { id: 24, title: 'Hi-Taller Max Syrup', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bgMain },
+  { id: 13, title: 'Apletyz Syrup (Batch 2)', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg1, retailPrice: 1299 },
+  { id: 14, title: 'Peptacid Antacid Syrup (Batch 2)', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'IN STOCK', image: bg2, retailPrice: 899 },
+  { id: 15, title: 'Castor Oil (Pure Extract)', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg3, retailPrice: 1599 },
+  { id: 16, title: 'IQ Focus – Advanced Formula', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bg4, retailPrice: 2299 },
+  { id: 17, title: 'Scab-Care Soap (Pack of 2)', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg5, retailPrice: 699 },
+  { id: 18, title: 'IQ Focus Syrup (Family Box)', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'IN STOCK', image: bg6, retailPrice: 2599 },
+  { id: 19, title: 'Permitron Lotion 100ml', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg7, retailPrice: 1099 },
+  { id: 20, title: 'Pumsa Syrup High Strength', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bg8, retailPrice: 1899 },
+  { id: 21, title: 'Kidz D3 Drops Forte', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg9, retailPrice: 1199 },
+  { id: 22, title: 'O.R.S Powder Sachet (Lemon Flavor)', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'IN STOCK', image: bg10, retailPrice: 379 },
+  { id: 23, title: 'Glutox Ultra Tablets', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg11, retailPrice: 3199 },
+  { id: 24, title: 'Hi-Taller Max Syrup', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bgMain, retailPrice: 1999 },
 
   // PAGE 3 Items (25-30)
-  { id: 25, title: 'Apletyz Extra Strength', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg1 },
-  { id: 26, title: 'Peptacid Max Syrup', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'IN STOCK', image: bg2 },
-  { id: 27, title: 'Organic Castor Oil', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg3 },
-  { id: 28, title: 'IQ Focus Junior', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bg4 },
-  { id: 29, title: 'Scab-Care Herbal Soap', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg5 },
-  { id: 30, title: 'Permitron Plus Lotion', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg7 },
-].map(p => ({ ...p, retailPrice: 15.99 })))
+  { id: 25, title: 'Apletyz Extra Strength', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg1, retailPrice: 1399 },
+  { id: 26, title: 'Peptacid Max Syrup', category: 'DIGESTIVE HEALTH, PERSONAL CARE', categoryKey: 'digestive', stock: 'IN STOCK', image: bg2, retailPrice: 949 },
+  { id: 27, title: 'Organic Castor Oil', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg3, retailPrice: 1699 },
+  { id: 28, title: 'IQ Focus Junior', category: 'BRAIN & NERVES, DIETARY SUPPLEMENTS', categoryKey: 'brain', stock: 'IN STOCK', image: bg4, retailPrice: 2399 },
+  { id: 29, title: 'Scab-Care Herbal Soap', category: 'FITNESS, PERSONAL CARE', categoryKey: 'fitness', stock: 'IN STOCK', image: bg5, retailPrice: 749 },
+  { id: 30, title: 'Permitron Plus Lotion', category: 'HEALTH & WELLNESS', categoryKey: 'wellness', stock: 'IN STOCK', image: bg7, retailPrice: 1049 },
+])
 
 // Layout View Toggle State ('grid' | 'list')
 const currentView = ref('grid')
@@ -98,6 +98,11 @@ const paginatedProducts = computed(() => {
 
 const startItemIndex = computed(() => totalResults.value === 0 ? 0 : ((currentPage.value - 1) * itemsPerPage) + 1)
 const endItemIndex = computed(() => Math.min(currentPage.value * itemsPerPage, totalResults.value))
+
+// Format a number as a PKR-style price string, e.g. 1299 -> "1,299"
+function formatPKR(amount) {
+  return Number(amount).toLocaleString('en-PK')
+}
 
 // Fixed Navigation Function (Targeted Smooth Scroll)
 function goToPage(page) {
@@ -269,7 +274,7 @@ function addToCart(event, product) {
         <h3 class="mt-1.5 line-clamp-2 text-base font-extrabold leading-snug text-gray-900 transition-colors group-hover:text-blue-900">
           {{ product.title }}
         </h3>
-        <p class="mt-1 text-sm font-bold text-gray-700">Rs. {{ product.retailPrice }}</p>
+        <p class="mt-1 text-sm font-bold text-gray-700">Rs. {{ formatPKR(product.retailPrice) }}</p>
       </div>
       <div class="mt-4 flex items-center justify-between">
         <button 
@@ -307,7 +312,7 @@ function addToCart(event, product) {
             <h3 class="mt-1 text-base font-bold text-slate-800 transition-colors group-hover:text-blue-900">
               {{ product.title }}
             </h3>
-            <p class="mt-1 text-sm font-bold text-gray-700">Rs. {{ product.retailPrice }}</p>
+            <p class="mt-1 text-sm font-bold text-gray-700">Rs. {{ formatPKR(product.retailPrice) }}</p>
           </div>
 
           <div class="flex items-center sm:pr-4">
