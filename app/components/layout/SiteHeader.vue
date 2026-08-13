@@ -307,7 +307,9 @@ watch([mobileMenuOpen, cartDrawerOpen], ([isMenuOpen, isCartOpen]) => {
               <div class="flex flex-1 flex-col justify-between">
                 <div>
                   <h3 class="text-sm font-bold leading-snug text-slate-800 line-clamp-2">{{ item.product.title }}</h3>
-                  <p class="mt-1 text-sm font-extrabold text-[#14B8A6]">Rs. {{ item.product.retailPrice }}</p>
+                  <p class="mt-1 text-sm font-extrabold text-[#14B8A6]">
+                    Rs. {{ (item.product.retailPrice * item.quantity).toFixed(2) }}
+                  </p>
                 </div>
                 <div class="mt-2 flex items-center justify-between">
                   <div class="flex items-center rounded-lg border border-slate-200 bg-white shadow-xs">
