@@ -1,299 +1,956 @@
 <script setup>
-import hero1 from '~/assets/Common/hero.mp4'
-import hero2 from '~/assets/Common/hero.mp4'
-import hero3 from '~/assets/Common/hero.mp4'
-import hero4 from '~/assets/Common/hero.mp4'
-import hero5 from '~/assets/Common/hero.mp4'
+import {
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+} from 'vue'
 
-const slides = [
+import storyVideo from '../../assets/Common/hero.mp4'
+
+// ── Frame sequence ────────────────────────────────────────────
+const modules = import.meta.glob(
+  '../../assets/heroframe/**/*.webp',
   {
-    videoSrc: hero1,
-    tag: 'Advanced Maternity Care',
-    title: 'Bringing New Life Into the World, Safely',
-    description: 'State-of-the-art NICU facilities and expert maternal care teams ensure every birth is a celebration.',
-    primaryLabel: 'Maternity Services',
-    primaryTo: '/services/maternity',
-    secondaryLabel: 'Watch Story'
+    eager: true,
+    query: '?url',
+    import: 'default',
   },
-  {
-    videoSrc: hero2,
-    tag: 'Contract Manufacturing',
-    title: 'Precision Manufacturing You Can Trust',
-    description: 'GMP-certified facilities delivering consistent quality for every batch, every time.',
-    primaryLabel: 'Our Services',
-    primaryTo: '/services/manufacturing',
-    secondaryLabel: 'Watch Story'
-  },
-  {
-    videoSrc: hero1,
-    tag: 'Supplement Formulations',
-    title: 'Science-Backed Formulations, Built for You',
-    description: 'From concept to capsule, our R&D team brings your formulation vision to life.',
-    primaryLabel: 'Explore Formulations',
-    primaryTo: '/services/supplement-formulations',
-    secondaryLabel: 'Watch Story'
-  },
-  {
-    videoSrc: hero4,
-    tag: 'Private Label Manufacturing',
-    title: 'Your Brand, Our Expertise',
-    description: 'Launch your own product line with full private label support, start to finish.',
-    primaryLabel: 'Start Your Brand',
-    primaryTo: '/services/private-label-manufacturing',
-    secondaryLabel: 'Watch Story'
-  },
-  {
-    videoSrc: hero5,
-    tag: 'Fast Turnaround',
-    title: 'Speed Without Compromising Quality',
-    description: 'Streamlined production timelines that get your products to market faster.',
-    primaryLabel: 'Learn More',
-    primaryTo: '/services/fast-turnaround',
-    secondaryLabel: 'Watch Story'
-  }
+)
+
+const frames = Object.entries(modules)
+  .sort(([a], [b]) =>
+    a.localeCompare(b, undefined, { numeric: true }),
+  )
+  .map(([, url]) => url)
+  .filter((url) => typeof url === 'string')
+
+const section = ref(null)
+const stage = ref(null)
+const media = ref(null)
+const canvas = ref(null)
+const headline = ref(null)
+
+const dialog = ref(null)
+const player = ref(null)
+const storyButton = ref(null)
+
+const progress = ref(0)
+const ready = ref(false)
+const reducedMotion = ref(false)
+
+const errorMessage = ref(
+  frames.length
+    ? ''
+    : 'Frames missing: app/assets/heroframe.',
+)
+
+// ── Animated text ─────────────────────────────────────────────
+const headlineText = [
+  'Care, crafted',
+  'with purpose.',
 ]
 
-const activeSlide = ref(0)
-const direction = ref('next')
+let letterIndex = 0
 
-function nextSlide() {
-  direction.value = 'next'
-  activeSlide.value = (activeSlide.value + 1) % slides.length
-  restartAutoplay()
-}
+const headlineLines = headlineText.map((text) =>
+  text.split(' ').map((word) =>
+    [...word].map((character) => ({
+      character,
+      index: letterIndex++,
+    })),
+  ),
+)
 
-function prevSlide() {
-  direction.value = 'prev'
-  activeSlide.value = (activeSlide.value - 1 + slides.length) % slides.length
-  restartAutoplay()
-}
+const desktopParagraph =
+  'Discover our product range and explore formulation, manufacturing, and private-label services for your next project.'
 
-function goToSlide(index) {
-  direction.value = index > activeSlide.value ? 'next' : 'prev'
-  activeSlide.value = index
-  restartAutoplay()
-}
+const mobileParagraph =
+  'Explore our products, formulations, and manufacturing services.'
 
-const watchStoryOpen = ref(false)
+function splitParagraph(text) {
+  let offset = 0
 
-function openWatchStory() {
-  watchStoryOpen.value = true
-}
+  return text.split(' ').map((word) => {
+    const characters = [...word].map((character) => ({
+      character,
+      index: offset++,
+    }))
 
-function closeWatchStory() {
-  watchStoryOpen.value = false
-}
-
-// Keep all videos mounted; play only the active one, pause the rest
-const videoRefs = ref([])
-
-function setVideoRef(el, index) {
-  if (el) videoRefs.value[index] = el
-}
-
-function syncVideos() {
-  videoRefs.value.forEach((el, index) => {
-    if (!el) return
-    if (index === activeSlide.value) {
-      el.currentTime = 0
-      el.play().catch(() => {})
-    } else {
-      el.pause()
-    }
+    offset++ // Space between words.
+    return characters
   })
 }
 
-watch(activeSlide, () => {
-  syncVideos()
-})
+const desktopWords = splitParagraph(desktopParagraph)
+const mobileWords = splitParagraph(mobileParagraph)
 
-onMounted(() => {
-  syncVideos()
-  startAutoplay()
-})
+// Text remains readable during SSR / without JavaScript.
+const textStarted = ref(false)
+const visibleCharacters = ref(desktopParagraph.length)
 
-// Auto-advance
-let autoplayTimer = null
+let typingDelay
+let typingInterval
+let textAnimations = []
+let foldElements = []
 
-function startAutoplay() {
-  autoplayTimer = setInterval(() => {
-    direction.value = 'next'
-    activeSlide.value = (activeSlide.value + 1) % slides.length
-  }, 7000)
+function stopTextTimers() {
+  clearTimeout(typingDelay)
+  clearInterval(typingInterval)
 }
 
-function stopAutoplay() {
-  if (autoplayTimer) {
-    clearInterval(autoplayTimer)
-    autoplayTimer = null
+function resetHover() {
+  for (const element of foldElements) {
+    element.style.setProperty('--hover-angle', '0deg')
   }
 }
 
-function restartAutoplay() {
-  stopAutoplay()
-  startAutoplay()
+function onHeadlinePointer(event) {
+  if (
+    reducedMotion.value ||
+    event.pointerType !== 'mouse'
+  ) {
+    return
+  }
+
+  for (const element of foldElements) {
+    const rect = element.getBoundingClientRect()
+
+    const distance = Math.hypot(
+      event.clientX - (rect.left + rect.width / 2),
+      event.clientY - (rect.top + rect.height / 2),
+    )
+
+    const strength = Math.max(0, 1 - distance / 140)
+
+    element.style.setProperty(
+      '--hover-angle',
+      `${-45 * strength}deg`,
+    )
+  }
 }
 
-onUnmounted(() => {
-  stopAutoplay()
+function showAllText() {
+  stopTextTimers()
+
+  for (const animation of textAnimations) {
+    animation.cancel()
+  }
+
+  textAnimations = []
+  visibleCharacters.value = desktopParagraph.length
+  resetHover()
+}
+
+function startTextAnimation() {
+  if (destroyed || !headline.value) return
+
+  textStarted.value = true
+
+  foldElements = [
+    ...headline.value.querySelectorAll('[data-fold-letter]'),
+  ]
+
+  if (reducedMotion.value) {
+    showAllText()
+    return
+  }
+
+  visibleCharacters.value = 0
+
+  textAnimations = foldElements.map((element, index) =>
+    element.animate(
+      [
+        {
+          opacity: 0,
+          transform: 'perspective(700px) rotateX(-92deg)',
+          filter: 'brightness(0.55)',
+        },
+        {
+          opacity: 1,
+          transform: 'perspective(700px) rotateX(0deg)',
+          filter: 'brightness(1)',
+        },
+      ],
+      {
+        duration: 650,
+        delay: index * 45,
+        easing: 'cubic-bezier(0.215, 0.61, 0.355, 1)',
+        fill: 'backwards',
+      },
+    ),
+  )
+
+  typingDelay = setTimeout(() => {
+    if (destroyed || reducedMotion.value) return
+
+    typingInterval = setInterval(() => {
+      visibleCharacters.value = Math.min(
+        desktopParagraph.length,
+        visibleCharacters.value + 1,
+      )
+
+      if (
+        visibleCharacters.value >= desktopParagraph.length
+      ) {
+        clearInterval(typingInterval)
+      }
+    }, 22)
+  }, 1050)
+}
+
+// ── Frame loading ────────────────────────────────────────────
+const MAX_CACHE = 48
+const MAX_LOADS = 3
+
+const cache = new Map()
+const pending = new Map()
+const failed = new Set()
+
+let queue = []
+let activeLoads = 0
+let targetIndex = 0
+let displayedIndex = -1
+let displayedImage = null
+
+let ctx
+let width = 0
+let height = 0
+let raf = 0
+let destroyed = false
+let needsPaint = true
+
+let observer
+let motionQuery
+
+function trimCache() {
+  const removable = [...cache.keys()]
+    .filter((index) => index !== displayedIndex)
+    .sort(
+      (a, b) =>
+        Math.abs(b - targetIndex) -
+        Math.abs(a - targetIndex),
+    )
+
+  while (cache.size > MAX_CACHE && removable.length) {
+    cache.delete(removable.shift())
+  }
+}
+
+function pumpQueue() {
+  if (destroyed) return
+
+  while (activeLoads < MAX_LOADS && queue.length) {
+    const index = queue.shift()
+    const url = frames[index]
+
+    if (
+      !url ||
+      cache.has(index) ||
+      pending.has(index) ||
+      failed.has(index)
+    ) {
+      continue
+    }
+
+    activeLoads++
+
+    const image = new Image()
+    image.decoding = 'async'
+    pending.set(index, image)
+
+    let finished = false
+
+    function complete(success) {
+      if (finished) return
+      finished = true
+
+      image.onload = null
+      image.onerror = null
+
+      pending.delete(index)
+      activeLoads--
+
+      if (destroyed) return
+
+      if (success) {
+        cache.set(index, image)
+        errorMessage.value = ''
+        trimCache()
+        schedule()
+      } else {
+        failed.add(index)
+
+        if (!ready.value && index === targetIndex) {
+          errorMessage.value =
+            'A frame could not load. Check the WebP files.'
+        }
+      }
+
+      pumpQueue()
+    }
+
+    image.onload = async () => {
+      try {
+        await image.decode()
+      } catch {
+        // Use a successfully loaded image if dimensions are valid.
+      }
+
+      complete(
+        image.naturalWidth > 0 &&
+        image.naturalHeight > 0,
+      )
+    }
+
+    image.onerror = () => complete(false)
+    image.src = url
+  }
+}
+
+function requestFrames() {
+  if (!frames.length || destroyed) return
+
+  const wanted = new Set()
+
+  function add(index) {
+    if (index >= 0 && index < frames.length) {
+      wanted.add(index)
+    }
+  }
+
+  add(targetIndex)
+
+  if (!reducedMotion.value) {
+    for (let distance = 1; distance <= 16; distance++) {
+      add(targetIndex + distance)
+      add(targetIndex - distance)
+    }
+  }
+
+  queue = [...wanted].filter(
+    (index) =>
+      !cache.has(index) &&
+      !pending.has(index) &&
+      !failed.has(index),
+  )
+
+  pumpQueue()
+}
+
+// ── Canvas rendering: one opaque frame at a time ──────────────
+function paint(image) {
+  if (!ctx || !image?.naturalWidth || !width || !height) {
+    return false
+  }
+
+  const sourceWidth = image.naturalWidth
+  const sourceHeight = image.naturalHeight
+
+  const scale = Math.min(
+    width / sourceWidth,
+    height / sourceHeight,
+  )
+
+  const drawnWidth = sourceWidth * scale
+  const drawnHeight = sourceHeight * scale
+
+  const mobile = window.innerWidth < 1024
+
+  const x = mobile
+    ? Math.max(0, (width - drawnWidth) / 2)
+    : Math.max(0, width - drawnWidth)
+
+  const y = Math.max(0, (height - drawnHeight) / 2)
+
+  ctx.globalAlpha = 1
+  ctx.globalCompositeOperation = 'source-over'
+  ctx.fillStyle = '#eaf5fa'
+  ctx.fillRect(0, 0, width, height)
+
+  // Extend background without stretching the actual products.
+  ctx.drawImage(
+    image, 2, 0, 2, sourceHeight,
+    0, 0, width, height,
+  )
+
+  if (x > 0) {
+    ctx.drawImage(
+      image, 2, 0, 2, sourceHeight,
+      0, y, x + 1, drawnHeight,
+    )
+  }
+
+  const right = x + drawnWidth
+
+  if (right < width) {
+    ctx.drawImage(
+      image, sourceWidth - 3, 0, 2, sourceHeight,
+      right - 1, y, width - right + 1, drawnHeight,
+    )
+  }
+
+  if (y > 0) {
+    ctx.drawImage(
+      image, 0, 1, sourceWidth, 2,
+      x, 0, drawnWidth, y + 1,
+    )
+  }
+
+  const bottom = y + drawnHeight
+
+  if (bottom < height) {
+    ctx.drawImage(
+      image, 0, sourceHeight - 3, sourceWidth, 2,
+      x, bottom - 1, drawnWidth, height - bottom + 1,
+    )
+  }
+
+  ctx.drawImage(image, x, y, drawnWidth, drawnHeight)
+
+  return true
+}
+
+function draw() {
+  if (!ctx || !frames.length) return
+
+  const requestedImage = cache.get(targetIndex)
+
+  if (requestedImage) {
+    if (displayedIndex !== targetIndex || needsPaint) {
+      if (paint(requestedImage)) {
+        displayedImage = requestedImage
+        displayedIndex = targetIndex
+        needsPaint = false
+        ready.value = true
+      }
+    }
+
+    return
+  }
+
+  // Keep the previous frame visible until the requested one is ready.
+  if (needsPaint && displayedImage) {
+    if (paint(displayedImage)) needsPaint = false
+  }
+}
+
+function updateProgress() {
+  if (!section.value || !stage.value || !frames.length) {
+    return
+  }
+
+  if (reducedMotion.value) {
+    progress.value = 1
+    targetIndex = frames.length - 1
+  } else {
+    const scrollY = window.scrollY
+    const rect = section.value.getBoundingClientRect()
+    const sectionTop = rect.top + scrollY
+    const stageHeight = stage.value.getBoundingClientRect().height
+
+    const headerHeight =
+      parseFloat(getComputedStyle(stage.value).top) || 0
+
+    const naturalStart = Math.max(
+      0,
+      sectionTop - headerHeight,
+    )
+
+    const start =
+      sectionTop <= window.innerHeight ? 0 : naturalStart
+
+    const end = Math.max(
+      start + 1,
+      sectionTop + rect.height - stageHeight - headerHeight,
+    )
+
+    progress.value = Math.max(
+      0,
+      Math.min(1, (scrollY - start) / (end - start)),
+    )
+
+    targetIndex = Math.round(
+      progress.value * (frames.length - 1),
+    )
+  }
+
+  requestFrames()
+}
+
+function schedule() {
+  if (destroyed || raf) return
+
+  raf = requestAnimationFrame(() => {
+    raf = 0
+    updateProgress()
+    draw()
+  })
+}
+
+function resizeCanvas() {
+  if (!canvas.value || !media.value || destroyed) return
+
+  const rect = media.value.getBoundingClientRect()
+  if (!rect.width || !rect.height) return
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2)
+  const nextWidth = Math.max(1, Math.round(rect.width * dpr))
+  const nextHeight = Math.max(1, Math.round(rect.height * dpr))
+
+  width = rect.width
+  height = rect.height
+
+  if (
+    !ctx ||
+    canvas.value.width !== nextWidth ||
+    canvas.value.height !== nextHeight
+  ) {
+    canvas.value.width = nextWidth
+    canvas.value.height = nextHeight
+
+    ctx = canvas.value.getContext('2d')
+
+    if (ctx) {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      ctx.imageSmoothingEnabled = true
+      ctx.imageSmoothingQuality = 'high'
+      needsPaint = true
+
+      if (displayedImage && paint(displayedImage)) {
+        needsPaint = false
+      }
+    }
+  }
+
+  schedule()
+}
+
+async function onMotionChange() {
+  reducedMotion.value = Boolean(motionQuery?.matches)
+
+  if (reducedMotion.value) showAllText()
+
+  await nextTick()
+  if (!destroyed) resizeCanvas()
+}
+
+// ── Story modal ───────────────────────────────────────────────
+function openStory() {
+  if (!dialog.value || dialog.value.open) return
+
+  dialog.value.showModal()
+  player.value?.play().catch(() => {})
+}
+
+function closeStory() {
+  dialog.value?.close()
+}
+
+function onStoryClosed() {
+  player.value?.pause()
+
+  if (!destroyed) {
+    storyButton.value?.focus({ preventScroll: true })
+  }
+}
+
+function onDialogClick(event) {
+  const element = dialog.value
+  if (!element || event.target !== element) return
+
+  const rect = element.getBoundingClientRect()
+
+  if (
+    event.clientX < rect.left ||
+    event.clientX > rect.right ||
+    event.clientY < rect.top ||
+    event.clientY > rect.bottom
+  ) {
+    closeStory()
+  }
+}
+
+// ── Lifecycle ─────────────────────────────────────────────────
+onMounted(async () => {
+  motionQuery = window.matchMedia(
+    '(prefers-reduced-motion: reduce)',
+  )
+
+  reducedMotion.value = motionQuery.matches
+  motionQuery.addEventListener('change', onMotionChange)
+
+  await nextTick()
+  if (destroyed) return
+
+  startTextAnimation()
+
+  observer = new ResizeObserver(resizeCanvas)
+  if (media.value) observer.observe(media.value)
+
+  window.addEventListener('scroll', schedule, { passive: true })
+  window.addEventListener('resize', resizeCanvas, { passive: true })
+
+  resizeCanvas()
+})
+
+onBeforeUnmount(() => {
+  destroyed = true
+
+  cancelAnimationFrame(raf)
+  observer?.disconnect()
+  stopTextTimers()
+
+  for (const animation of textAnimations) animation.cancel()
+
+  window.removeEventListener('scroll', schedule)
+  window.removeEventListener('resize', resizeCanvas)
+  motionQuery?.removeEventListener('change', onMotionChange)
+
+  player.value?.pause()
+  dialog.value?.close()
+
+  for (const image of pending.values()) {
+    image.onload = null
+    image.onerror = null
+    image.removeAttribute('src')
+  }
+
+  pending.clear()
+  cache.clear()
+
+  displayedImage = null
+  queue = []
+  foldElements = []
+  textAnimations = []
 })
 </script>
 
 <template>
   <section
-    class="relative h-[500px] w-full overflow-hidden sm:h-[550px] md:h-[620px]"
-    @mouseenter="stopAutoplay"
-    @mouseleave="startAutoplay"
+    ref="section"
+    aria-label="Human Care Laboratories"
+    class="relative w-full bg-[#eaf5fa] [--hero-header-height:96px] lg:[--hero-header-height:114px]"
+    :class="reducedMotion ? 'h-auto' : 'h-[240svh]'"
   >
-    <!-- All videos stay mounted; only opacity toggles for a true crossfade -->
-    <video
-      v-for="(slide, index) in slides"
-      :key="index"
-      :ref="(el) => setVideoRef(el, index)"
-      class="absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out"
-      :class="index === activeSlide ? 'opacity-100 z-0' : 'opacity-0 z-0'"
-      :src="slide.videoSrc"
-      muted
-      loop
-      playsinline
-      preload="auto"
-    />
+    <div
+      ref="stage"
+      class="top-[var(--hero-header-height)] isolate h-[calc(100svh-var(--hero-header-height))] w-full overflow-hidden bg-[#eaf5fa]"
+      :class="reducedMotion ? 'relative' : 'sticky'"
+    >
+      <!-- Product frames -->
+      <div
+        ref="media"
+        class="absolute inset-x-0 bottom-9 top-[49%] overflow-hidden sm:top-[43%] lg:inset-0"
+        aria-hidden="true"
+      >
+        <canvas
+          ref="canvas"
+          class="absolute inset-0 block h-full w-full"
+        />
+      </div>
 
-    <!-- Dark overlay for text contrast -->
-    <div class="absolute inset-0 z-[1] bg-black/40" />
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 hidden bg-gradient-to-r from-[#edf7fc]/90 via-transparent to-transparent lg:block"
+      />
 
-    <!-- Content -->
-    <div class="relative -mt-4 ml-12 z-10 flex h-full items-center">
-      <div class="mx-auto w-full max-w-7xl px-6 sm:px-6">
-        <Transition :name="direction === 'next' ? 'slide-next' : 'slide-prev'" mode="out-in">
-          <div :key="activeSlide" class="max-w-xl text-white">
-            <span class="inline-block  rounded-full bg-white/15 px-3 py-1 text-xs font-sans font-semibold uppercase tracking-wide backdrop-blur-sm">
-              {{ slides[activeSlide].tag }}
+      <!-- Hero content -->
+      <div
+        class="relative z-10 mx-auto flex h-[49%] w-full max-w-[1560px] items-center px-6 py-3 sm:h-[43%] sm:px-10 sm:py-5 lg:h-full lg:px-14 lg:py-14 xl:px-20"
+      >
+        <div
+          class="mx-auto w-full max-w-[560px] text-center lg:mx-0 lg:w-[39%] lg:max-w-[490px] lg:text-left"
+        >
+          <div
+            class="flex items-center justify-center gap-2.5 lg:justify-start"
+          >
+            <span
+              aria-hidden="true"
+              class="h-px w-5 bg-[#087f78]/70 sm:w-7"
+            />
+
+            <span
+              class="font-sans text-[8px] font-semibold uppercase tracking-[0.18em] text-[#087f78] sm:text-[10px] xl:text-[11px]"
+            >
+              Human Care Laboratories
+            </span>
+          </div>
+
+          <!-- Fold heading -->
+          <h1
+            ref="headline"
+            class="mt-3 font-serif text-[clamp(1.7rem,4.8svh,2.75rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-[#193b68] sm:mt-4 lg:text-[clamp(2.7rem,4.3vw,4.6rem)]"
+            @pointermove="onHeadlinePointer"
+            @pointerleave="resetHover"
+          >
+            <span class="sr-only">
+              Care, crafted with purpose.
             </span>
 
-            <h1 class="mt-4 tracking-[0.06em] font-serif text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
-              {{ slides[activeSlide].title }}
-            </h1>
-
-            <p class="mt-4 font-sans text-sm text-white/90 sm:text-base">
-              {{ slides[activeSlide].description }}
-            </p>
-
-            <div class="mt-6 flex flex-wrap items-center gap-3">
-              <NuxtLink
-                :to="slides[activeSlide].primaryTo"
-                class="flex items-center gap-2 rounded-full bg-brand-teal px-6 py-3 text-sm font-sans font-semibold text-white transition-colors hover:bg-brand-teal/90"
+            <span aria-hidden="true">
+              <span
+                v-for="(line, lineIndex) in headlineLines"
+                :key="lineIndex"
+                class="block"
+                :class="lineIndex === 1 ? 'text-[#078c83]' : ''"
               >
-                {{ slides[activeSlide].primaryLabel }}
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
-                </svg>
-              </NuxtLink>
+                <template
+                  v-for="(word, wordIndex) in line"
+                  :key="wordIndex"
+                >
+                  <span class="inline-block whitespace-nowrap">
+                    <span
+                      v-for="letter in word"
+                      :key="letter.index"
+                      data-fold-letter
+                      class="hero-fold-letter"
+                    >
+                      <span class="hero-fold-hover">
+                        {{ letter.character }}
+                      </span>
+                    </span>
+                  </span>
 
-              <button
-                class="flex items-center gap-2 rounded-full bg-white/20 px-6 py-3 text-sm font-sans font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/30"
-                @click="openWatchStory"
-              >
-                <span class="flex h-6 w-6 items-center justify-center rounded-full bg-white text-brand-navy">
-                  <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </span>
-                {{ slides[activeSlide].secondaryLabel }}
-              </button>
-            </div>
-          </div>
-        </Transition>
-      </div>
-    </div>
+                  <span v-if="wordIndex < line.length - 1">
+                    {{ ' ' }}
+                  </span>
+                </template>
+              </span>
+            </span>
+          </h1>
 
-    <!-- Prev / Next arrows -->
-    <button
-      class="absolute left-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/30 sm:left-6"
-      aria-label="Previous slide"
-      @click="prevSlide"
-    >
-      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-      </svg>
-    </button>
-
-    <button
-      class="absolute right-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/30 sm:right-6"
-      aria-label="Next slide"
-      @click="nextSlide"
-    >
-      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-      </svg>
-    </button>
-
-    <!-- Pagination dots -->
-    <div class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2">
-      <button
-        v-for="(slide, index) in slides"
-        :key="index"
-        class="h-2 rounded-full transition-all duration-300"
-        :class="index === activeSlide ? 'w-6 bg-white' : 'w-2 bg-white/50'"
-        :aria-label="`Go to slide ${index + 1}`"
-        @click="goToSlide(index)"
-      />
-    </div>
-
-    <!-- Watch Story modal -->
-    <Transition
-      enter-active-class="transition-opacity duration-200 ease-out"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition-opacity duration-150 ease-in"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="watchStoryOpen"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-        @click.self="closeWatchStory"
-      >
-        <div class="relative w-full max-w-3xl">
-          <button
-            class="absolute -top-10 right-0 text-white hover:opacity-80"
-            aria-label="Close video"
-            @click="closeWatchStory"
+          <!-- Mobile typing paragraph -->
+          <p
+            class="mx-auto mt-3 max-w-[320px] font-sans text-[12px] leading-[1.6] text-[#465e73] sm:max-w-[400px] sm:text-sm lg:hidden"
           >
-            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-          <video class="w-full rounded-lg" :src="slides[activeSlide].videoSrc" controls autoplay />
+            <span class="sr-only">{{ mobileParagraph }}</span>
+
+            <span aria-hidden="true">
+              <template
+                v-for="(word, wordIndex) in mobileWords"
+                :key="wordIndex"
+              >
+                <span class="inline-block whitespace-nowrap">
+                  <span
+                    v-for="letter in word"
+                    :key="letter.index"
+                    :class="{
+                      'invisible':
+                        textStarted &&
+                        !reducedMotion &&
+                        letter.index >= visibleCharacters,
+                    }"
+                  >{{ letter.character }}</span>
+                </span>
+
+                <span v-if="wordIndex < mobileWords.length - 1">
+                  {{ ' ' }}
+                </span>
+              </template>
+            </span>
+          </p>
+
+          <!-- Desktop typing paragraph -->
+          <p
+            class="mt-5 hidden max-w-[420px] font-sans text-sm leading-7 text-[#465e73] lg:block xl:text-base"
+          >
+            <span class="sr-only">{{ desktopParagraph }}</span>
+
+            <span aria-hidden="true">
+              <template
+                v-for="(word, wordIndex) in desktopWords"
+                :key="wordIndex"
+              >
+                <span class="inline-block whitespace-nowrap">
+                  <span
+                    v-for="letter in word"
+                    :key="letter.index"
+                    :class="{
+                      'invisible':
+                        textStarted &&
+                        !reducedMotion &&
+                        letter.index >= visibleCharacters,
+                    }"
+                  >{{ letter.character }}</span>
+                </span>
+
+                <span v-if="wordIndex < desktopWords.length - 1">
+                  {{ ' ' }}
+                </span>
+              </template>
+            </span>
+          </p>
+
+          <!-- Actions -->
+          <div
+            class="mt-4 flex flex-wrap items-center justify-center gap-2.5 sm:mt-5 lg:mt-7 lg:justify-start lg:gap-3"
+          >
+            <NuxtLink
+              to="/services/manufacturing"
+              class="group inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#087f78] px-5 py-2.5 font-sans text-[11px] font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#06665f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#087f78] motion-reduce:transform-none motion-reduce:transition-none sm:px-6 sm:text-xs xl:min-h-12 xl:text-sm"
+            >
+              Our Services
+
+              <svg
+                aria-hidden="true"
+                class="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4 12h16m-6-6 6 6-6 6"
+                />
+              </svg>
+            </NuxtLink>
+
+            <button
+              ref="storyButton"
+              type="button"
+              class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#193b68]/20 bg-white/70 px-4 py-2.5 font-sans text-[11px] font-semibold text-[#193b68] transition duration-300 hover:border-[#087f78] hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#087f78] sm:px-5 sm:text-xs xl:min-h-12 xl:text-sm"
+              @click="openStory"
+            >
+              <svg
+                aria-hidden="true"
+                class="h-3 w-3"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="m8 5 11 7-11 7V5Z" />
+              </svg>
+
+              Watch Story
+            </button>
+          </div>
         </div>
       </div>
-    </Transition>
+
+      <p
+        v-if="!ready && !errorMessage"
+        role="status"
+        class="absolute inset-x-0 bottom-[25%] z-20 text-center font-sans text-xs text-[#465e73] lg:inset-x-auto lg:bottom-auto lg:right-6 lg:top-6"
+      >
+        Loading product view…
+      </p>
+
+      <p
+        v-if="errorMessage"
+        role="status"
+        class="absolute inset-x-5 bottom-12 z-30 mx-auto max-w-lg rounded-lg border border-red-200 bg-white p-3 text-center font-sans text-xs text-red-700"
+      >
+        {{ errorMessage }}
+      </p>
+
+      <!-- Scroll progress -->
+      <div
+        v-if="!reducedMotion"
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-x-0 bottom-0 z-20 mx-auto flex h-9 w-full max-w-[1560px] items-center justify-between px-6 sm:px-10 lg:bottom-3 lg:h-10 lg:px-14 xl:px-20"
+      >
+        <span
+          class="flex items-center gap-2 font-sans text-[8px] font-semibold uppercase tracking-[0.17em] text-[#36546c] sm:text-[9px]"
+        >
+          <svg
+            class="h-3.5 w-3.5 text-[#087f78]"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4v16m-5-5 5 5 5-5"
+            />
+          </svg>
+
+          Scroll to discover
+        </span>
+
+        <div class="flex items-center gap-3">
+          <div
+            class="h-px w-16 overflow-hidden bg-[#193b68]/20 sm:w-24 lg:w-28"
+          >
+            <div
+              class="h-full origin-left bg-[#087f78]"
+              :style="{ transform: `scaleX(${progress})` }"
+            />
+          </div>
+
+          <span
+            class="w-8 text-right font-sans text-[9px] tabular-nums text-[#36546c]"
+          >
+            {{ Math.round(progress * 100) }}%
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Story modal -->
+    <Teleport to="body">
+      <dialog
+        ref="dialog"
+        aria-label="Human Care Laboratories video"
+        class="fixed inset-0 m-auto w-[92vw] max-w-4xl rounded-2xl border border-white/20 bg-[#10243d] p-3 text-white shadow-2xl backdrop:bg-black/75 backdrop:backdrop-blur-sm sm:p-4"
+        @click="onDialogClick"
+        @close="onStoryClosed"
+      >
+        <div class="mb-3 flex items-center justify-between gap-4">
+          <p class="font-sans text-xs sm:text-sm">
+            Human Care Laboratories
+          </p>
+
+          <button
+            type="button"
+            autofocus
+            aria-label="Close video"
+            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-xl hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+            @click="closeStory"
+          >
+            ×
+          </button>
+        </div>
+
+        <video
+          ref="player"
+          :src="storyVideo"
+          controls
+          playsinline
+          preload="none"
+          class="max-h-[75svh] w-full rounded-lg bg-black"
+        />
+      </dialog>
+    </Teleport>
   </section>
 </template>
 
 <style scoped>
-.slide-next-enter-active,
-.slide-next-leave-active,
-.slide-prev-enter-active,
-.slide-prev-leave-active {
-  transition: opacity 0.4s ease, transform 0.4s ease;
+.hero-fold-letter {
+  display: inline-block;
+  transform-origin: 50% 0%;
+  backface-visibility: hidden;
 }
 
-.slide-next-enter-from {
-  opacity: 0;
-  transform: translateX(24px);
-}
-.slide-next-leave-to {
-  opacity: 0;
-  transform: translateX(-24px);
+.hero-fold-hover {
+  display: inline-block;
+  transform-origin: 50% 0%;
+  backface-visibility: hidden;
+  transform: perspective(700px) rotateX(var(--hover-angle, 0deg));
+  transition: transform 450ms cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
-.slide-prev-enter-from {
-  opacity: 0;
-  transform: translateX(-24px);
-}
-.slide-prev-leave-to {
-  opacity: 0;
-  transform: translateX(24px);
+@media (prefers-reduced-motion: reduce) {
+  .hero-fold-letter,
+  .hero-fold-hover {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
 }
 </style>
